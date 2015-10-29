@@ -1,0 +1,51 @@
+(define (install-ration-package)
+  ;;
+  (define (sin x)
+    (make-rat (sin (/ (numer x) (denom x)))
+              1))
+  (define (cos x)
+    (make-rat (cos (/ (numer x) (denom x)))
+              1))
+  (define (sqrt x)
+    (make-rat (sqrt (/ (numer x) (denom x)))
+              1))
+  (define (atan x)
+    (make-rat (atan (/ (numer x) (denom x)))
+              1))
+  (define (square x)
+    (mul-rat x x))
+
+  ;;
+  (put 'sin '(ration)
+       (lambda (x) (tag (sin x))))
+  (put 'cos '(ration)
+       (lambda (x) (tag (cos x))))
+  (put 'sqrt '(ration)
+       (lambda (x) (tag (sqrt x))))
+  (put 'atan '(ration)
+       (lambda (x) (tag (atan x))))
+  (put 'square '(ration)
+       (lambda (x) (tag (square x))))
+  'done)
+
+(define (sine z) (apply-generic 'sin z))
+(define (cosine z) (apply-generic 'cos z))
+(define (square-root z) (apply-generic 'sqrt z))
+(define (arc-tangent z) (apply-generic 'atan z))
+(define (square z) (apply-generic 'square z))
+
+(define (install-rectangular-package)
+  ;; 内部手続き
+  (define (real-part z) (car z))
+  (define (imag-part z) (cdr z))
+  (define (magnitude z)
+    (square-root (add (square (real-part z)) (square (imag-part z)))))
+  (define (angle z)
+    (arc-tangent (imag-part z) (real-part z)))
+  (define (make-from-real-imag x y) (cons x y))
+  (define (make-from-mag-ang r a)
+    (cons (mul r (cosine a)) (mul r (sine a))))
+
+  ;; システムの他の部分とのインターフェース
+  ;; ...
+  'done)

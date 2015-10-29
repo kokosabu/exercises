@@ -1,0 +1,40 @@
+(load "./ex2-02.scm")
+
+; pointを2つで長方形を表現
+(define (make-rectangle p1 p2)
+  (cons p1 p2))
+(define (width rec)
+  (abs (- (x-point (car rec)) (x-point (cdr rec)))))
+(define (height rec)
+  (abs (- (y-point (car rec)) (y-point (cdr rec)))))
+(define (perimeter rec)
+  (* 2 (+ (width rec) (height rec))))
+(define (area rec)
+  (* (width rec) (height rec)))
+
+(define a (make-rectangle (make-point 3 4)
+                          (make-point 6 8)))
+
+
+; 別バージョン
+; segmentを2つで長方形を表現
+(define (make-rectangle s1 s2)
+  (cons s1 s2))
+(define (width rec)
+  (define (square x) (* x x))
+  (let ((s1 (abs (- (x-point (start-segment (car rec)))
+                    (x-point (end-segment (car rec))))))
+        (s2 (abs (- (y-point (start-segment (car rec)))
+                    (y-point (end-segment (car rec)))))))
+    (sqrt (+ (square s1) (square s2)))))
+(define (height rec)
+  (define (square x) (* x x))
+  (let ((s1 (abs (- (x-point (start-segment (cdr rec)))
+                    (x-point (end-segment (cdr rec))))))
+        (s2 (abs (- (y-point (start-segment (cdr rec)))
+                    (y-point (end-segment (cdr rec)))))))
+    (sqrt (+ (square s1) (square s2)))))
+(define b (make-rectangle (make-segment (make-point 3 8)
+                                        (make-point 3 4))
+                          (make-segment (make-point 3 4)
+                                        (make-point 6 4))))

@@ -1,0 +1,41 @@
+(load "./ex2-79.scm")
+(load "./ex2-84.scm")
+
+(define (install-project-package)
+  (define (complex->real x) (make-scheme-number (real-part x)))
+  (define (real->ration x) (make-ration x 1))
+  (define (ration->integer x)
+    (let ((n (car x))
+          (d (cdr x)))
+    (attach-tag 'integer (round (/ n d)))))
+  (put 'project 'complex complex->real)
+  (put 'project 'real real->ration)
+  (put 'project 'ration ration->integer)
+  'done)
+
+(define (project x)
+  ((get 'project (type-tag x)) (contents x)))
+
+(define (drop x)
+  (let (project-x (project x))
+    (let (project-raise-x (raise project-x))
+      (if (equ? x project-raise-x)
+          (drop project-x)
+          x))))
+
+(define (apply-generic op . args)
+  (let ((type-tags (map type-tag args)))
+    (let ((proc (get op type-tags)))
+      (if proc
+          (drop (apply proc (map contents args))) ; new
+          (if (= (length args) 2))
+              (let ((type1 (car type-tags))
+                    (type2 (cadr type-tags))
+                    (a1 (car args))
+                    (a2 (cadr args)))
+                (let ((tall (taller-type type1 type2)))
+                  (if (eq? tall type1)
+                      (apply-generic op a1 (raise a2))
+                      (apply-generic op (raise a1) a2))))
+              (error "No method for these types"
+                     (list op type-tags))))))

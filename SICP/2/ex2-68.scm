@@ -1,0 +1,23 @@
+(load "./ex2-67.scm")
+
+(define (encode message tree)
+  (if (null? message)
+	  '()
+	  (append (encode-symbol (car message) tree)
+			  (encode (cdr message) tree))))
+
+(define (encode-symbol symbol tree)
+  (define (element-of-set? set)
+	(cond ((null? set) #f)
+		  ((eq? symbol (car set)) #t)
+		  (else (element-of-set? (cdr set)))))
+  (define (sub-encode-symbol code tree)
+	(cond ((leaf? tree)
+		   code)
+		  ((element-of-set? (symbols (left-branch tree)))
+		   (sub-encode-symbol (append code (list 0)) (left-branch tree)))
+		  (else
+		   (sub-encode-symbol (append code (list 1)) (right-branch tree)))))
+  (if (element-of-set? (symbols tree))
+	  (sub-encode-symbol '() tree)
+	  (error "bad symbol -- ENCODE-SYMBOL" symbol)))

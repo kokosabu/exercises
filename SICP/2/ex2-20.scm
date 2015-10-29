@@ -1,0 +1,10 @@
+(define (same-parity v . l)
+  (define (same-parity-iter same? result l)
+    (cond ((null? l) result)
+          ((same? (car l))
+           (same-parity-iter same? (append result (list (car l))) (cdr l)))
+          (else
+           (same-parity-iter same? result (cdr l)))))
+  (if (even? v)
+      (same-parity-iter even? (cons v '()) l)
+      (same-parity-iter odd?  (cons v '()) l)))

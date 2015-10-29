@@ -1,0 +1,41 @@
+順番どおりにしないと期待したシミュレーションにならない。
+wireは1か0の状態を持ち、変化がある場合のみアクションするようになっている。
+切り替わりのタイミングがキューでないと変わることがある。
+
+*and-gate
+gosh> (probe 'c c)
+
+c 0  New-value = 0#<undef>
+gosh> (and-gate a b c)
+ok
+gosh> (set-signal! b 1)
+done
+gosh> (set-signal! a 1)
+done
+gosh> (set-signal! b 0)
+done
+gosh> (propagate)
+
+c 3  New-value = 1
+c 3  New-value = 0done
+gosh>
+
+*and-gate(擬似的リスト。というより同じ時間区分でのLIFO) †
+gosh> (probe 'c c)
+
+c 0  New-value = 0#<undef>
+gosh> (and-gate a b c)
+ok
+gosh> (set-signal! b 1)
+done
+gosh> (set-signal! b 0)
+done
+gosh> (set-signal! a 1)
+done
+gosh> (propagate)
+done
+gosh>
+
+and-gateの出力の動きが変わっている。
+FIFOであるとand-gateの出力結果が一旦1になるが、
+LIFOであるとずっと0のままであるという扱いになる。

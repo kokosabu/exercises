@@ -1,0 +1,32 @@
+a.
+Peter -> Paul  -> Mary  => 45
+Peter -> Mary  -> Paul  => 35
+Paul  -> Peter -> Mary  => 45
+Paul  -> Mary  -> Peter => 50
+Mary  -> Peter -> Paul  => 40
+Mary  -> Paul  -> Peter => 40
+
+b.
+Peter
+a1: 残金にアクセス
+a2: +10
+a3: 残金を設定
+Paul
+b1: 残金にアクセス
+b2: -20
+b3: 残金を設定
+Mary
+c1: 残金にアクセス
+c2: /2
+c3: 残金にアクセス
+c4: -c2
+c5: 残金を設定
+
+最小
+a1 -> b1 -> a2 -> a3 -> c1 -> c2 -> b2 -> b3 -> c3 -> c4 -> c5 =>  25
+最大
+a1 -> b1 -> b2 -> b3 -> c1 -> c2 -> c3 -> c4 -> c5 -> a2 -> a3 => 110
+
+他に
+a1 -> b1 -> c1 -> b2 -> b3 -> a2 -> a3 -> c2 -> c3 -> c4 -> c5 => 60
+a1 -> b1 -> c1 -> a2 -> a3 -> b2 -> b3 -> c2 -> c3 -> c4 -> c5 => 30

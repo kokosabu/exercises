@@ -1,0 +1,6 @@
+(define (ripple-carry-adder ak bk sk C)
+  (if (not (null? ak))
+      (let ((c (make-wire)))
+        (full-adder (car ak) (car ak) C (car sk) c)
+        (ripple-carry-adder (cdr ak) (cdr bk) (cdr sk) c))
+      'ok))
