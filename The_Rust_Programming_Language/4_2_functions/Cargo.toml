@@ -1,0 +1,6 @@
+[package]
+name = "4_2_functions"
+version = "0.1.0"
+authors = ["MIURA Yasuyuki <kokosabu@gmail.com>"]
+
+[dependencies]
