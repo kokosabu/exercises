@@ -1,0 +1,6 @@
+[package]
+name = "4_10_lifetimes"
+version = "0.1.0"
+authors = ["MIURA Yasuyuki <kokosabu@gmail.com>"]
+
+[dependencies]
