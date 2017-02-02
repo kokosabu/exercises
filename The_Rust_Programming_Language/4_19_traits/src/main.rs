@@ -47,6 +47,30 @@ impl HasArea for Square {
     }
 }
 
+struct Rectangle<T> {
+    x: T,
+    y: T,
+    width: T,
+    height: T,
+}
+
+impl<T: PartialEq> Rectangle<T> {
+    fn is_square(&self) -> bool {
+        self.width == self.height
+    }
+}
+
+impl HasArea for i32 {
+    fn area(&self) -> f64 {
+        println!("this is silly");
+
+        *self as f64
+    }
+    fn is_larger(&self, other: &Self) -> bool {
+        self > other
+    }
+}
+
 fn main() {
     let c = Circle {
         x: 0.0f64,
@@ -62,4 +86,18 @@ fn main() {
 
     print_area(c);
     print_area(s);
+
+    let mut r = Rectangle {
+            x: 0,
+            y: 0,
+            width: 47,
+            height: 47,
+    };
+
+    assert!(r.is_square());
+
+    r.height = 42;
+    assert!(!r.is_square());
+
+    5.area();
 }
