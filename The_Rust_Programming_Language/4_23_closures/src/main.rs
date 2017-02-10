@@ -42,4 +42,31 @@ fn main() {
         add_num(5);
     }
     assert_eq!(5, num);
+
+    fn call_with_one<F>(some_closure: F) -> i32
+        where F: Fn(i32) -> i32 {
+
+        some_closure(1)
+    }
+    let answer = call_with_one(|x| x + 2);
+    assert_eq!(3, answer);
+
+    fn call_with_one2(some_closure: &Fn(i32) -> i32) -> i32 {
+        some_closure(1)
+    }
+    fn add_one(i: i32) -> i32 {
+        i + 1
+    }
+    let f = add_one;
+    let answer = call_with_one2(&f);
+    assert_eq!(2, answer);
+
+    fn factory() -> Box<(Fn(i32) -> i32)> {
+        let num = 5;
+
+        Box::new(move |x| x + num)
+    }
+    let f = factory();
+    let answer = f(1);
+    assert_eq!(6, answer);
 }
