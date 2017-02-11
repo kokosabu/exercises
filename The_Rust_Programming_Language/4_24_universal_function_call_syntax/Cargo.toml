@@ -1,0 +1,6 @@
+[package]
+name = "4_24_universal_function_call_syntax"
+version = "0.1.0"
+authors = ["MIURA Yasuyuki <kokosabu@gmail.com>"]
+
+[dependencies]
