@@ -1,0 +1,6 @@
+[package]
+name = "4_33_deref_coercions"
+version = "0.1.0"
+authors = ["MIURA Yasuyuki <kokosabu@gmail.com>"]
+
+[dependencies]
