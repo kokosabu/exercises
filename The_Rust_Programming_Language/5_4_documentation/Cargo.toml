@@ -1,0 +1,6 @@
+[package]
+name = "5_4_documentation"
+version = "0.1.0"
+authors = ["MIURA Yasuyuki <kokosabu@gmail.com>"]
+
+[dependencies]
