@@ -1,9 +1,8 @@
 use std::thread;
 
 fn main() {
-    let handle = thread::spawn(|| {
-        "Hello from a thread!"
+    let x = 1;
+    thread::spawn(move || {
+        println!("x is {}", x);
     });
-
-    println!("{}", handle.join().unwrap());
 }
