@@ -1,12 +1,8 @@
-// Guess a number between 1 and 10.
-// If it matches the number we had in mind, return `true`. Else, return `false`.
-fn guess(n: i32) -> bool {
-    if n < 1 || n > 10 {
-        panic!("Invalid number: {}", n);
-    }
-    n == 5
-}
+use std::env;
 
 fn main() {
-    guess(11);
+    let mut argv = env::args();
+    let arg: String = argv.nth(1).unwrap(); // error 1
+    let n: i32 = arg.parse().unwrap(); // error 2
+    println!("{}", 2 * n);
 }
