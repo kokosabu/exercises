@@ -1,8 +1,18 @@
-use std::env;
+// Searches `haystack` for the Unicode character `needle`. If one is found, the
+// byte offset of the character is returned. Otherwise, `None` is returned.
+fn find(haystack: &str, needle: char) -> Option<usize> {
+    for (offset, c) in haystack.char_indices() {
+        if c == needle {
+            return Some(offset);
+        }
+    }
+    None
+}
 
 fn main() {
-    let mut argv = env::args();
-    let arg: String = argv.nth(1).unwrap(); // error 1
-    let n: i32 = arg.parse().unwrap(); // error 2
-    println!("{}", 2 * n);
+    let file_name = "foobar.rs";
+    match find(file_name, '.') {
+        None => println!("No file extension found."),
+        Some(i) => println!("File extension: {}", &file_name[i+1..]),
+    }
 }
