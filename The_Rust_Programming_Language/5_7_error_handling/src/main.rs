@@ -1,65 +1,31 @@
-// Searches `haystack` for the Unicode character `needle`. If one is found, the
-// byte offset of the character is returned. Otherwise, `None` is returned.
-fn find(haystack: &str, needle: char) -> Option<usize> {
-    for (offset, c) in haystack.char_indices() {
-        if c == needle {
-            return Some(offset);
-        }
-    }
-    None
+use std::num::ParseIntError;
+
+fn double_number(number_str: &str) -> Result<i32, ParseIntError> {
+    number_str.parse::<i32>().map(|n| 2 * n)
 }
 
-// Returns the extension of the given file name, where the extension is defined
-// as all characters following the first `.`.
-// If `file_name` has no `.`, then `None` is returned.
-fn extension_explicit(file_name: &str) -> Option<&str> {
-    match find(file_name, '.') {
-        None => None,
-        Some(i) => Some(&file_name[i+1..]),
-    }
-}
+//fn double_number(number_str: &str) -> Result<i32, ParseIntError> {
+//    match number_str.parse::<i32>() {
+//        Ok(n) => Ok(2 * n),
+//        Err(err) => Err(err),
+//    }
+//}
 
-fn map<F, T, A>(option: Option<T>, f: F) -> Option<A> where F: FnOnce(T) -> A {
-    match option {
-        None => None,
-        Some(value) => Some(f(value)),
-    }
-}
-
-// Returns the extension of the given file name, where the extension is defined
-// as all characters following the first `.`.
-// If `file_name` has no `.`, then `None` is returned.
-fn extension(file_name: &str) -> Option<&str> {
-    find(file_name, '.').map(|i| &file_name[i+1..])
-}
-
-fn unwrap_or<T>(option: Option<T>, default: T) -> T {
-    match option {
-        None => default,
-        Some(value) => value,
-    }
-}
+// fn double_number(number_str: &str) -> i32 {
+//     2 * number_str.parse::<i32>().unwrap()
+// }
 
 fn main() {
-    assert_eq!(extension("foobar.csv").unwrap_or("rs"), "csv");
-    assert_eq!(extension("foobar").unwrap_or("rs"), "rs");
-}
-
-fn file_path_ext_explicit(file_path: &str) -> Option<&str> {
-    match file_name(file_path) {
-        None => None,
-        Some(name) => match extension(name) {
-            None => None,
-            Some(ext) => Some(ext),
-        }
+    match double_number("10") {
+        Ok(n) => assert_eq!(n, 20),
+        Err(err) => println!("Error: {:?}", err),
     }
+    match double_number("a") {
+        Ok(n) => assert_eq!(n, 20),
+        Err(err) => println!("Error: {:?}", err),
+    }
+    //let n: i32 = double_number("10");
+    //assert_eq!(n, 20);
+    //let n: i32 = double_number("a");
+    //assert_eq!(n, 20);
 }
-
-fn file_name(file_path: &str) -> Option<&str> {
-  // Implementation elided.
-  unimplemented!()
-}
-
-// fn file_path_ext(file_path: &str) -> Option<&str> {
-//     file_name(file_path).map(|x| extension(x)) // This causes a compilation error.
-// }
