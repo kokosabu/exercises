@@ -1,18 +1,22 @@
-use std::num::ParseIntError;
-use std::result;
 use std::env;
 
-type Result<T> = result::Result<T, ParseIntError>;
+fn ok_or<T, E>(option: Option<T>, err: E) -> Result<T, E> {
+    match option {
+        Some(val) => Ok(val),
+        None => Err(err),
+    }
+}
 
-fn double_number(number_str: &str) -> Result<i32> {
-    unimplemented!();
+fn double_arg(mut argv: env::Args) -> Result<i32, String> {
+    argv.nth(1)
+        .ok_or("Please give at least one argument".to_owned())
+        .and_then(|arg| arg.parse::<i32>().map_err(|err| err.to_string()))
+        .map(|n| 2 * n)
 }
 
 fn main() {
-	//double_number("10");
-    //double_number("a");
-    let mut argv = env::args();
-    let arg: String = argv.nth(1).unwrap(); // error 1
-    let n: i32 = arg.parse().unwrap(); // error 2
-    println!("{}", 2 * n);
+    match double_arg(env::args()) {
+        Ok(n) => println!("{}", n),
+        Err(err) => println!("Error: {}", err),
+    }
 }
