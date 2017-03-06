@@ -1,31 +1,18 @@
 use std::num::ParseIntError;
+use std::result;
+use std::env;
 
-fn double_number(number_str: &str) -> Result<i32, ParseIntError> {
-    number_str.parse::<i32>().map(|n| 2 * n)
+type Result<T> = result::Result<T, ParseIntError>;
+
+fn double_number(number_str: &str) -> Result<i32> {
+    unimplemented!();
 }
 
-//fn double_number(number_str: &str) -> Result<i32, ParseIntError> {
-//    match number_str.parse::<i32>() {
-//        Ok(n) => Ok(2 * n),
-//        Err(err) => Err(err),
-//    }
-//}
-
-// fn double_number(number_str: &str) -> i32 {
-//     2 * number_str.parse::<i32>().unwrap()
-// }
-
 fn main() {
-    match double_number("10") {
-        Ok(n) => assert_eq!(n, 20),
-        Err(err) => println!("Error: {:?}", err),
-    }
-    match double_number("a") {
-        Ok(n) => assert_eq!(n, 20),
-        Err(err) => println!("Error: {:?}", err),
-    }
-    //let n: i32 = double_number("10");
-    //assert_eq!(n, 20);
-    //let n: i32 = double_number("a");
-    //assert_eq!(n, 20);
+	//double_number("10");
+    //double_number("a");
+    let mut argv = env::args();
+    let arg: String = argv.nth(1).unwrap(); // error 1
+    let n: i32 = arg.parse().unwrap(); // error 2
+    println!("{}", 2 * n);
 }
