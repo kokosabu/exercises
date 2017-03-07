@@ -1,22 +1,16 @@
-use std::env;
+use std::fs::File;
+use std::io::Read;
+use std::path::Path;
 
-fn ok_or<T, E>(option: Option<T>, err: E) -> Result<T, E> {
-    match option {
-        Some(val) => Ok(val),
-        None => Err(err),
-    }
-}
-
-fn double_arg(mut argv: env::Args) -> Result<i32, String> {
-    argv.nth(1)
-        .ok_or("Please give at least one argument".to_owned())
-        .and_then(|arg| arg.parse::<i32>().map_err(|err| err.to_string()))
-        .map(|n| 2 * n)
+fn file_double<P: AsRef<Path>>(file_path: P) -> i32 {
+    let mut file = File::open(file_path).unwrap(); // error 1
+    let mut contents = String::new();
+    file.read_to_string(&mut contents).unwrap(); // error 2
+    let n: i32 = contents.trim().parse().unwrap(); // error 3
+    2 * n
 }
 
 fn main() {
-    match double_arg(env::args()) {
-        Ok(n) => println!("{}", n),
-        Err(err) => println!("Error: {}", err),
-    }
+    let doubled = file_double("foobar");
+    println!("{}", doubled);
 }
