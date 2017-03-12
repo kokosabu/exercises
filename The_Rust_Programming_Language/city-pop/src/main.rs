@@ -4,6 +4,26 @@ extern crate rustc_serialize;
 use getopts::Options;
 use std::env;
 
+use std::fs::File;
+
+// This struct represents the data in each row of the CSV file.
+// Type based decoding absolves us of a lot of the nitty gritty error
+// handling, like parsing strings as integers or floats.
+#[derive(Debug, RustcDecodable)]
+struct Row {
+    country: String,
+    city: String,
+    accent_city: String,
+    region: String,
+
+    // Not every row has data for the population, latitude or longitude!
+    // So we express them as `Option` types, which admits the possibility of
+    // absence. The CSV parser will fill in the correct value for us.
+    population: Option<u64>,
+    latitude: Option<f64>,
+    longitude: Option<f64>,
+}
+
 fn print_usage(program: &str, opts: Options) {
     println!("{}", opts.usage(&format!("Usage: {} [options] <data-path> <city>", program)));
 }
@@ -19,12 +39,25 @@ fn main() {
         Ok(m)  => { m }
         Err(e) => { panic!(e.to_string()) }
     };
+
     if matches.opt_present("h") {
         print_usage(&program, opts);
         return;
     }
+
     let data_path = &matches.free[0];
     let city: &str = &matches.free[1];
 
-    // Do stuff with information.
+    let file = File::open(data_path).unwrap();
+    let mut rdr = csv::Reader::from_reader(file);
+
+    for row in rdr.decode::<Row>() {
+        let row = row.unwrap();
+
+        if row.city == city {
+            println!("{}, {}: {:?}",
+                row.city, row.country,
+                row.population.expect("population count"));
+        }
+    }
 }
