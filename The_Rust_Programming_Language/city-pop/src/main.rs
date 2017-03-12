@@ -3,8 +3,8 @@ extern crate rustc_serialize;
 
 use getopts::Options;
 use std::env;
-
 use std::fs::File;
+use std::path::Path;
 
 // This struct represents the data in each row of the CSV file.
 // Type based decoding absolves us of a lot of the nitty gritty error
@@ -24,8 +24,36 @@ struct Row {
     longitude: Option<f64>,
 }
 
+struct PopulationCount {
+    city: String,
+    country: String,
+    // This is no longer an `Option` because values of this type are only
+    // constructed if they have a population count.
+    count: u64,
+}
+
 fn print_usage(program: &str, opts: Options) {
     println!("{}", opts.usage(&format!("Usage: {} [options] <data-path> <city>", program)));
+}
+
+fn search<P: AsRef<Path>>(file_path: P, city: &str) -> Vec<PopulationCount> {
+    let mut found = vec![];
+    let file = File::open(file_path).unwrap();
+    let mut rdr = csv::Reader::from_reader(file);
+    for row in rdr.decode::<Row>() {
+        let row = row.unwrap();
+        match row.population {
+            None => { } // Skip it.
+            Some(count) => if row.city == city {
+                found.push(PopulationCount {
+                    city: row.city,
+                    country: row.country,
+                    count: count,
+                });
+            },
+        }
+    }
+    found
 }
 
 fn main() {
@@ -48,16 +76,7 @@ fn main() {
     let data_path = &matches.free[0];
     let city: &str = &matches.free[1];
 
-    let file = File::open(data_path).unwrap();
-    let mut rdr = csv::Reader::from_reader(file);
-
-    for row in rdr.decode::<Row>() {
-        let row = row.unwrap();
-
-        if row.city == city {
-            println!("{}, {}: {:?}",
-                row.city, row.country,
-                row.population.expect("population count"));
-        }
+    for pop in search(data_path, city) {
+        println!("{}, {}: {:?}", pop.city, pop.country, pop.count);
     }
 }
