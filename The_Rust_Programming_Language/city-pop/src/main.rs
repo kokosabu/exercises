@@ -8,6 +8,59 @@ use std::fs::File;
 use std::path::Path;
 use std::error::Error;
 use std::io;
+use std::process;
+
+#[derive(Debug)]
+enum CliError {
+    Io(io::Error),
+    Csv(csv::Error),
+    NotFound,
+}
+
+use std::fmt;
+
+impl fmt::Display for CliError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            CliError::Io(ref err) => err.fmt(f),
+            CliError::Csv(ref err) => err.fmt(f),
+            CliError::NotFound => write!(f, "No matching cities with a \
+                                             population were found."),
+        }
+    }
+}
+
+impl Error for CliError {
+    fn description(&self) -> &str {
+        match *self {
+            CliError::Io(ref err) => err.description(),
+            CliError::Csv(ref err) => err.description(),
+            CliError::NotFound => "not found",
+        }
+    }
+
+    fn cause(&self) -> Option<&Error> {
+        match *self {
+            CliError::Io(ref err) => Some(err),
+            CliError::Csv(ref err) => Some(err),
+            // Our custom error doesn't have an underlying cause,
+            // but we could modify it so that it does.
+            CliError::NotFound => None,
+        }
+    }
+}
+
+impl From<io::Error> for CliError {
+    fn from(err: io::Error) -> CliError {
+        CliError::Io(err)
+    }
+}
+
+impl From<csv::Error> for CliError {
+    fn from(err: csv::Error) -> CliError {
+        CliError::Csv(err)
+    }
+}
 
 // This struct represents the data in each row of the CSV file.
 // Type based decoding absolves us of a lot of the nitty gritty error
@@ -41,7 +94,7 @@ fn print_usage(program: &str, opts: Options) {
 
 fn search<P: AsRef<Path>>
          (file_path: &Option<P>, city: &str)
-         -> Result<Vec<PopulationCount>, Box<Error>> {
+         -> Result<Vec<PopulationCount>, CliError> {
     let mut found = vec![];
     let input: Box<io::Read> = match *file_path {
         None => Box::new(io::stdin()),
@@ -62,7 +115,7 @@ fn search<P: AsRef<Path>>
         }
     }
     if found.is_empty() {
-        Err(From::from("No matching cities with a population were found."))
+        Err(CliError::NotFound)
     } else {
         Ok(found)
     }
@@ -75,6 +128,7 @@ fn main() {
     let mut opts = Options::new();
     opts.optopt("f", "file", "Choose an input file, instead of using STDIN.", "NAME");
     opts.optflag("h", "help", "Show this usage message.");
+    opts.optflag("q", "quiet", "Silences errors and warnings.");
 	// ...
 
     let matches = match opts.parse(&args[1..]) {
@@ -97,11 +151,10 @@ fn main() {
     };
 
     match search(&data_path, city) {
-        Ok(pops) => {
-            for pop in pops {
-                println!("{}, {}: {:?}", pop.city, pop.country, pop.count);
-            }
+        Err(CliError::NotFound) if matches.opt_present("q") => process::exit(1),
+        Err(err) => panic!("{}", err),
+        Ok(pops) => for pop in pops {
+            println!("{}, {}: {:?}", pop.city, pop.country, pop.count);
         }
-        Err(err) => println!("{}", err)
     }
 }
