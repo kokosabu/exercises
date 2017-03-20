@@ -1,0 +1,6 @@
+[package]
+name = "5_10_borrow_and_asref"
+version = "0.1.0"
+authors = ["MIURA Yasuyuki <kokosabu@gmail.com>"]
+
+[dependencies]
